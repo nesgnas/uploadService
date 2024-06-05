@@ -75,19 +75,22 @@ func HandleFileUploadToBucket(c *gin.Context) {
 		return
 	}
 
+	signedURL := GenerateV4URL(c, uploadedFile.Filename)
+
 	c.JSON(http.StatusOK, gin.H{
-		"message":  "file uploaded successfully",
+		"message": "file uploaded successfully",
+
 		"pathname": u.EscapedPath(),
+		"signURL":  signedURL,
 	})
 }
 
-func GenerateV4URL(c *gin.Context) {
+func GenerateV4URL(c *gin.Context, object string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 	putBuf := new(bytes.Buffer)
-	object := "445675328_1168866744564554_9070318082725663939_n.jpg"
 
 	bucket := "image-web-storage"
 	serviceAccount := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
@@ -97,10 +100,11 @@ func GenerateV4URL(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
-		return
+		return ""
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message":  "success",
-		"pathname": value,
-	})
+	//c.JSON(http.StatusOK, gin.H{
+	//	"message":  "success",
+	//	"pathname": value,
+	//})
+	return value
 }

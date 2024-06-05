@@ -7,31 +7,6 @@ import (
 )
 
 func main() {
-	//fmt.Println("Hello World")
-	//err := godotenv.Load(".env")
-	//if err != nil {
-	//	log.Fatal("Error loading .env file")
-	//}
-	//
-	//credentialsPath := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-	//if credentialsPath == "" {
-	//	fmt.Println("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
-	//	return
-	//}
-	//
-	//// Print the path for debugging purposes
-	////fmt.Printf("GOOGLE_APPLICATION_CREDENTIALS is set to: %s\n", credentialsPath)
-	//
-	//// Read the file
-	//jsonKey, err := os.ReadFile(credentialsPath)
-	//if err != nil {
-	//	fmt.Printf("Error reading file: %v\n", err)
-	//	return
-	//}
-	//
-	//// Print the content for verification (optional)
-	////fmt.Println("File read successfully")
-	//fmt.Println(string(jsonKey))
 
 	r := gin.Default()
 
@@ -42,9 +17,22 @@ func main() {
 		})
 	})
 
+	r.POST("/upload", func(c *gin.Context) {
+
+		file, FileHeader, err := c.Request.FormFile("file")
+		if err != nil {
+			c.JSON(400, gin.H{"message": err,
+				"file": FileHeader, "filee": file})
+		}
+		c.JSON(200, gin.H{
+			"file":  FileHeader,
+			"filee": file})
+
+	})
+
 	r.POST("/cloud-storage", cloudbucket.HandleFileUploadToBucket)
 
-	r.GET("/cloud-storage", cloudbucket.GenerateV4URL)
+	//r.GET("/cloud-storage", cloudbucket.GenerateV4URL)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
