@@ -30,7 +30,7 @@ func GenerateV4PutObjectSignedURL(w io.Writer, client *storage.Client, bucketNam
 		},
 		GoogleAccessID: conf.Email,
 		PrivateKey:     conf.PrivateKey,
-		Expires:        time.Now().Add(15 * time.Minute),
+		Expires:        time.Now().Add(1440 * time.Hour),
 	}
 
 	u, err := storage.SignedURL(bucketName, objectName, opts)
